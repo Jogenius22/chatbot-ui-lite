@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 // import { Formik, Field, Form } from "formik";
 import { OpenAIModel } from "@/types";
+import React from "react";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -19,7 +20,7 @@ const AdminPage = () => {
     setIsLoading(true);
 
     try {
-      const data = { model, temperature, maxResponseLength, prompt };
+      const data = { model, temperature, maxTokens: maxResponseLength, prompt };
       await axios.post("/api/set", data);
       setSuccessMessage("Configuration updated successfully");
       setErrorMessage(null);

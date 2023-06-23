@@ -1,13 +1,14 @@
-import { Message } from "@/types";
+import { Message, ChatbotConfig } from "@/types";
 import { OpenAIStream } from "@/utils";
 
 export const config = {
-  runtime: "edge"
+  runtime: "edge",
 };
 
 const handler = async (req: Request): Promise<Response> => {
   try {
-    const { messages } = (await req.json()) as {
+    const { chatbotConfig, messages } = (await req.json()) as {
+      chatbotConfig: ChatbotConfig;
       messages: Message[];
     };
 
@@ -24,7 +25,7 @@ const handler = async (req: Request): Promise<Response> => {
       messagesToSend.push(message);
     }
 
-    const stream = await OpenAIStream(messagesToSend);
+    const stream = await OpenAIStream(chatbotConfig, messagesToSend);
 
     return new Response(stream);
   } catch (error) {

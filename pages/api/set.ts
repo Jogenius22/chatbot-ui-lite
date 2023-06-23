@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { setChatbotConfig } from "../../utils/config";
-import { ChatbotConfig } from "../../types";
+import mysql from "mysql2/promise";
+import { ChatbotConfig } from "@/types";
+
+import { setChatbotConfig } from "@/utils/config";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,12 +13,10 @@ export default async function handler(
 
     try {
       await setChatbotConfig(newConfig);
-      res
-        .status(200)
-        .json({
-          status: "success",
-          message: "Configuration updated successfully.",
-        });
+      res.status(200).json({
+        status: "success",
+        message: "Configuration updated successfully.",
+      });
     } catch (error) {
       console.error(error);
       res

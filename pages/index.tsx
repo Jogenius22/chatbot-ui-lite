@@ -1,21 +1,52 @@
 import { Chat } from "@/components/Chat/Chat";
 import { Footer } from "@/components/Layout/Footer";
 import { Navbar } from "@/components/Layout/Navbar";
-import { Message } from "@/types";
+import { Message, ChatbotConfig } from "@/types";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
+import { getChatbotConfig } from "@/utils/config";
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [chatbotConfig, setChatbotConfig] = useState<ChatbotConfig | null>(
+    null
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const config = await getChatbotConfig();
+        setChatbotConfig(config);
+      } catch (error) {
+        console.error("Error fetching chatbot configuration:", error);
+      }
+    })();
+  }, []);
+
   const handleSend = async (message: Message) => {
+    let currentChatbotConfig = chatbotConfig;
+    if (!currentChatbotConfig) {
+      console.log("Fetching chatbot configuration...");
+      try {
+        const config = await getChatbotConfig();
+        if (!config) {
+          console.error("Failed to fetch chatbot configuration.");
+          return;
+        }
+        setChatbotConfig(config);
+        currentChatbotConfig = config; // Set the local variable
+      } catch (error) {
+        console.error("Error fetching chatbot configuration:", error);
+        return;
+      }
+    }
+
     const updatedMessages = [...messages, message];
 
     setMessages(updatedMessages);
@@ -24,11 +55,12 @@ export default function Home() {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        messages: updatedMessages
-      })
+        chatbotConfig: currentChatbotConfig,
+        messages: updatedMessages,
+      }),
     });
 
     if (!response.ok) {
@@ -60,15 +92,15 @@ export default function Home() {
           ...messages,
           {
             role: "assistant",
-            content: chunkValue
-          }
+            content: chunkValue,
+          },
         ]);
       } else {
         setMessages((messages) => {
           const lastMessage = messages[messages.length - 1];
           const updatedMessage = {
             ...lastMessage,
-            content: lastMessage.content + chunkValue
+            content: lastMessage.content + chunkValue,
           };
           return [...messages.slice(0, -1), updatedMessage];
         });
@@ -80,8 +112,8 @@ export default function Home() {
     setMessages([
       {
         role: "assistant",
-        content: `Hi there! I'm Chatbot UI, an AI assistant. I can help you with things like answering questions, providing information, and helping with tasks. How can I help you?`
-      }
+        content: `Hi there! I'm Chatbot UI, an AI assistant. I can help you with things like answering questions, providing information, and helping with tasks. How can I help you?`,
+      },
     ]);
   };
 
@@ -93,8 +125,8 @@ export default function Home() {
     setMessages([
       {
         role: "assistant",
-        content: `Hi there! I'm Chatbot UI, an AI assistant. I can help you with things like answering questions, providing information, and helping with tasks. How can I help you?`
-      }
+        content: `Hi there! I'm Chatbot UI, an AI assistant. I can help you with things like answering questions, providing information, and helping with tasks. How can I help you?`,
+      },
     ]);
   }, []);
 
@@ -106,14 +138,8 @@ export default function Home() {
           name="description"
           content="A simple chatbot starter kit for OpenAI's chat model using Next.js, TypeScript, and Tailwind CSS."
         />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1"
-        />
-        <link
-          rel="icon"
-          href="/favicon.ico"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="flex flex-col h-screen">
