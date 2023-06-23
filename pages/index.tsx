@@ -4,7 +4,6 @@ import { Navbar } from "@/components/Layout/Navbar";
 import { Message, ChatbotConfig } from "@/types";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
-import { getChatbotConfig } from "@/utils/config";
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -21,10 +20,14 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       try {
-        const config = await getChatbotConfig();
+        const response = await fetch("/api/get");
+        if (!response.ok) {
+          throw new Error("Failed to fetch chatbot configuration");
+        }
+        const config = await response.json();
         setChatbotConfig(config);
       } catch (error) {
-        console.error("Error fetching chatbot configuration:", error);
+        console.error(error);
       }
     })();
   }, []);
@@ -34,11 +37,12 @@ export default function Home() {
     if (!currentChatbotConfig) {
       console.log("Fetching chatbot configuration...");
       try {
-        const config = await getChatbotConfig();
-        if (!config) {
+        const response = await fetch("/api/get");
+        if (!response.ok) {
           console.error("Failed to fetch chatbot configuration.");
           return;
         }
+        const config = await response.json();
         setChatbotConfig(config);
         currentChatbotConfig = config; // Set the local variable
       } catch (error) {

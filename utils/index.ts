@@ -1,16 +1,19 @@
-import { Message, OpenAIModel, ChatbotConfig } from "@/types";
+import { Message, OpenAIModel } from "@/types";
 import {
   createParser,
   ParsedEvent,
   ReconnectInterval,
 } from "eventsource-parser";
 
-export const OpenAIStream = async (
-  chatbotConfig: ChatbotConfig,
-  messages: Message[]
-) => {
+export const OpenAIStream = async (chatbotConfig: any, messages: Message[]) => {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
+
+  if (!chatbotConfig) {
+    throw new Error("Chatbot configuration not loaded");
+  }
+  console.log(chatbotConfig);
+  // const temperature = parseFloat(chatbotConfig.temperature);
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     headers: {
@@ -28,12 +31,13 @@ export const OpenAIStream = async (
         ...messages,
       ],
       max_tokens: chatbotConfig.maxTokens,
-      temperature: chatbotConfig.temperature,
+      temperature: parseFloat(chatbotConfig.temperature),
       stream: true,
     }),
   });
 
   if (res.status !== 200) {
+    console.error("Error response from OpenAI API:", await res.json());
     throw new Error("OpenAI API returned an error");
   }
 

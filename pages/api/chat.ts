@@ -1,4 +1,4 @@
-import { Message, ChatbotConfig } from "@/types";
+import { ChatbotConfig, Message } from "@/types";
 import { OpenAIStream } from "@/utils";
 
 export const config = {
