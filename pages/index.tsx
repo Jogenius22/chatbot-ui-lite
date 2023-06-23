@@ -1,7 +1,7 @@
 import { Chat } from "@/components/Chat/Chat";
 import { Footer } from "@/components/Layout/Footer";
 import { Navbar } from "@/components/Layout/Navbar";
-import { Message, ChatbotConfig, OpenAIModel } from "@/types";
+import { Message, ChatbotConfig } from "@/types";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 
@@ -40,14 +40,6 @@ export default function Home() {
         const response = await fetch("/api/get");
         if (!response.ok) {
           console.error("Failed to fetch chatbot configuration.");
-          // Set default configuration if response is not OK
-          currentChatbotConfig = {
-            model: OpenAIModel.DAVINCI_TURBO,
-            temperature: 0.7,
-            maxTokens: 250,
-            prompt: "You are an AI Assistant, a Coach and an Hapiness Coach",
-          };
-          setChatbotConfig(currentChatbotConfig);
           return;
         }
         const config = await response.json();
@@ -56,14 +48,6 @@ export default function Home() {
         console.log(config);
       } catch (error) {
         console.error("Error fetching chatbot configuration:", error);
-        // Set default configuration in case of error
-        currentChatbotConfig = {
-          model: OpenAIModel.DAVINCI_TURBO,
-          temperature: 0.7,
-          maxTokens: 250,
-          prompt: "You are an AI Assistant, a Coach and an Hapiness Coach",
-        };
-        setChatbotConfig(currentChatbotConfig);
         return;
       }
     }
