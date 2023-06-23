@@ -112,15 +112,6 @@ export default function Home() {
     }
   };
 
-  const handleReset = () => {
-    setMessages([
-      {
-        role: "assistant",
-        content: `Hi there! I'm Chatbot UI, an AI assistant. I can help you with things like answering questions, providing information, and helping with tasks. How can I help you?`,
-      },
-    ]);
-  };
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -146,21 +137,13 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex flex-col h-screen">
-        <Navbar />
-
+      <div className="flex flex-col p-4 bg-[#101728]">
         <div className="flex-1 overflow-auto sm:px-10 pb-4 sm:pb-10">
           <div className="max-w-[800px] mx-auto mt-4 sm:mt-12">
-            <Chat
-              messages={messages}
-              loading={loading}
-              onSend={handleSend}
-              onReset={handleReset}
-            />
+            <Chat messages={messages} loading={loading} onSend={handleSend} />
             <div ref={messagesEndRef} />
           </div>
         </div>
-        <Footer />
       </div>
     </>
   );
