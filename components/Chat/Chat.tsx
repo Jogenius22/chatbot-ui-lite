@@ -13,20 +13,22 @@ interface Props {
 export const Chat: FC<Props> = ({ messages, loading, onSend }) => {
   return (
     <>
-      <div className="flex flex-col rounded-lg px-2 sm:p-4">
-        {messages.map((message, index) => (
-          <div key={index} className="my-1 sm:my-1.5">
-            <ChatMessage message={message} />
-          </div>
-        ))}
+      <div className="flex flex-col h-screen p-2 sm:p-4">
+        <div className="overflow-auto h-[80vh] mb-2">
+          {messages.map((message, index) => (
+            <div key={index} className="my-1 sm:my-1.5">
+              <ChatMessage message={message} />
+            </div>
+          ))}
 
-        {loading && (
-          <div className="my-1 sm:my-1.5">
-            <ChatLoader />
-          </div>
-        )}
+          {loading && (
+            <div className="my-1 sm:my-1.5">
+              <ChatLoader />
+            </div>
+          )}
+        </div>
 
-        <div className="mt-4 sm:mt-8 bottom-[56px] left-0 w-full">
+        <div className="w-full h-[20vh]">
           <ChatInput onSend={onSend} />
         </div>
       </div>
